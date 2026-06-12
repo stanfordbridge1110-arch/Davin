@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>DaVinci Resolve Studio ショート動画ガイド</title>
+<style>
+  :root{
+    --bg:#1b1b1f;
+    --panel:#25252b;
+    --panel2:#2c2c34;
+    --line:#3a3a42;
+    --text:#e8e8ec;
+    --muted:#9c9ca8;
+    --accent:#e8553c;       /* Resolve選択色のオレンジレッド */
+    --c-setup:#8a8a96;      /* 設定=グレー */
+    --c-media:#d9a441;      /* メディア=アンバー */
+    --c-cut:#e8553c;        /* カット=オレンジレッド */
+    --c-text:#5b8dd9;       /* テロップ=ブルー */
+    --c-audio:#4fa8a0;      /* 音声=ティール */
+    --c-deliver:#b07cd8;    /* 書き出し=パープル */
+    --c-auto:#7cc46a;       /* 自動化=グリーン */
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto;} }
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic Medium","Yu Gothic",system-ui,sans-serif;
+    font-size:15px;
+    line-height:1.85;
+    padding-bottom:84px; /* 下部ナビ分 */
+  }
+  .wrap{max-width:680px;margin:0 auto;padding:0 18px;}
+
+  /* ───── ヘッダー ───── */
+  header{
+    padding:36px 0 8px;
+    border-bottom:1px solid var(--line);
+    margin-bottom:8px;
+  }
+  .eyebrow{
+    font-size:11px;
+    letter-spacing:.22em;
+    color:var(--accent);
+    font-weight:600;
+    margin-bottom:10px;
+  }
+  h1{
+    font-size:26px;
+    line-height:1.4;
+    font-weight:700;
+    letter-spacing:.01em;
+  }
+  h1 small{
+    display:block;
+    font-size:13px;
+    font-weight:400;
+    color:var(--muted);
+    margin-top:8px;
+    letter-spacing:.04em;
+  }
+
+  /* ───── タイムライン風の目次 ───── */
+  .toc{
+    padding:20px 0 26px;
+    border-bottom:1px solid var(--line);
+    margin-bottom:8px;
+  }
+  .toc-label{
+    font-size:11px;
+    color:var(--muted);
+    letter-spacing:.18em;
+    margin-bottom:12px;
+  }
+  .toc a{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    text-decoration:none;
+    color:var(--text);
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-left:4px solid var(--clip,#666);
+    border-radius:6px;
+    padding:11px 14px;
+    margin-bottom:8px;
+    font-size:14px;
+    -webkit-tap-highlight-color:rgba(232,85,60,.18);
+  }
+  .toc a:active{background:var(--panel2);}
+  .toc a .tc{
+    font-size:11px;
+    color:var(--muted);
+    font-variant-numeric:tabular-nums;
+    margin-left:auto;
+    letter-spacing:.06em;
+  }
+
+  /* ───── セクション共通 ───── */
+  section{
+    padding:30px 0 14px;
+    border-bottom:1px solid var(--line);
+    scroll-margin-top:12px;
+  }
+  .sec-head{
+    display:flex;
+    align-items:baseline;
+    gap:10px;
+    margin-bottom:6px;
+  }
+  .chip{
+    font-size:10px;
+    font-weight:700;
+    letter-spacing:.14em;
+    color:#16161a;
+    background:var(--clip,#888);
+    border-radius:3px;
+    padding:3px 8px;
+    white-space:nowrap;
+  }
+  h2{
+    font-size:20px;
+    font-weight:700;
+    line-height:1.5;
+  }
+  .lede{
+    color:var(--muted);
+    font-size:13.5px;
+    margin-bottom:18px;
+  }
+  h3{
+    font-size:15px;
+    font-weight:700;
+    margin:22px 0 8px;
+    padding-left:10px;
+    border-left:3px solid var(--clip,#888);
+  }
+  p{margin-bottom:12px;}
+  ol,ul{padding-left:1.4em;margin-bottom:14px;}
+  li{margin-bottom:7px;}
+  li::marker{color:var(--muted);}
+
+  kbd{
+    font-family:ui-monospace,Menlo,monospace;
+    font-size:12px;
+    background:var(--panel2);
+    border:1px solid var(--line);
+    border-bottom-width:2px;
+    border-radius:4px;
+    padding:1px 7px;
+    white-space:nowrap;
+  }
+  .menu{
+    color:var(--text);
+    background:var(--panel2);
+    border-radius:4px;
+    padding:1px 7px;
+    font-size:13px;
+    white-space:nowrap;
+  }
+  b{color:#fff;}
+
+  /* つまずきポイント */
+  .pit{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-left:4px solid var(--accent);
+    border-radius:6px;
+    padding:13px 15px;
+    margin:16px 0;
+    font-size:13.5px;
+  }
+  .pit .t{
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:.16em;
+    color:var(--accent);
+    display:block;
+    margin-bottom:5px;
+  }
+
+  /* Studio限定バッジ */
+  .studio{
+    display:inline-block;
+    font-size:10px;
+    font-weight:700;
+    letter-spacing:.1em;
+    color:var(--accent);
+    border:1px solid var(--accent);
+    border-radius:3px;
+    padding:1px 6px;
+    vertical-align:2px;
+    margin-left:6px;
+  }
+
+  /* 折りたたみ(手順詳細) */
+  details{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:6px;
+    margin:0 0 10px;
+  }
+  details summary{
+    list-style:none;
+    cursor:pointer;
+    padding:12px 15px;
+    font-weight:600;
+    font-size:14px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    -webkit-tap-highlight-color:rgba(232,85,60,.18);
+  }
+  details summary::-webkit-details-marker{display:none;}
+  details summary::before{
+    content:"▸";
+    color:var(--clip,#888);
+    font-size:13px;
+    transition:transform .15s;
+  }
+  details[open] summary::before{transform:rotate(90deg);}
+  details .body{
+    padding:2px 16px 14px;
+    border-top:1px solid var(--line);
+    font-size:14px;
+  }
+  details .body > :first-child{margin-top:12px;}
+
+  table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:13px;
+    margin:12px 0 16px;
+  }
+  th,td{
+    text-align:left;
+    padding:8px 10px;
+    border-bottom:1px solid var(--line);
+    vertical-align:top;
+  }
+  th{color:var(--muted);font-weight:600;font-size:12px;letter-spacing:.06em;}
+
+  /* セクションごとのクリップ色 */
+  #setup{--clip:var(--c-setup);}
+  #media{--clip:var(--c-media);}
+  #cut{--clip:var(--c-cut);}
+  #caption{--clip:var(--c-text);}
+  #audio{--clip:var(--c-audio);}
+  #deliver{--clip:var(--c-deliver);}
+  #auto{--clip:var(--c-auto);}
+  .toc a.l-setup{--clip:var(--c-setup);}
+  .toc a.l-media{--clip:var(--c-media);}
+  .toc a.l-cut{--clip:var(--c-cut);}
+  .toc a.l-caption{--clip:var(--c-text);}
+  .toc a.l-audio{--clip:var(--c-audio);}
+  .toc a.l-deliver{--clip:var(--c-deliver);}
+  .toc a.l-auto{--clip:var(--c-auto);}
+
+  /* ───── 下部ナビ(Resolveのページタブ風) ───── */
+  nav.pagebar{
+    position:fixed;
+    bottom:0;left:0;right:0;
+    background:rgba(27,27,31,.96);
+    backdrop-filter:blur(8px);
+    border-top:1px solid var(--line);
+    display:flex;
+    justify-content:space-around;
+    padding:8px 4px calc(8px + env(safe-area-inset-bottom));
+    z-index:50;
+  }
+  nav.pagebar a{
+    text-decoration:none;
+    color:var(--muted);
+    font-size:10px;
+    letter-spacing:.04em;
+    text-align:center;
+    min-width:42px;
+    -webkit-tap-highlight-color:transparent;
+  }
+  nav.pagebar a .dot{
+    display:block;
+    width:8px;height:8px;
+    border-radius:2px;
+    margin:0 auto 4px;
+    background:var(--d,#666);
+  }
+  nav.pagebar a:active{color:var(--text);}
+
+  footer{
+    padding:26px 0 18px;
+    color:var(--muted);
+    font-size:12px;
+    line-height:1.8;
+  }
+  a:focus-visible, summary:focus-visible{
+    outline:2px solid var(--accent);
+    outline-offset:2px;
+    border-radius:4px;
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">DAVINCI RESOLVE STUDIO</div>
+  <h1>ショート動画 制作ガイド
+    <small>YouTube Shorts / TikTok / Instagram Reels 向け・縦動画ワークフロー(Mac)</small>
+  </h1>
+</header>
+
+<div class="toc">
+  <div class="toc-label">WORKFLOW — 上から順に進めれば1本完成します</div>
+  <a class="l-setup" href="#setup">縦動画プロジェクトを作る <span class="tc">5分</span></a>
+  <a class="l-media" href="#media">素材を読み込む <span class="tc">2分</span></a>
+  <a class="l-cut" href="#cut">カット編集(本体作業) <span class="tc">中心</span></a>
+  <a class="l-caption" href="#caption">テロップ・自動字幕 <span class="tc">Studio</span></a>
+  <a class="l-audio" href="#audio">音声とBGM <span class="tc">5分</span></a>
+  <a class="l-deliver" href="#deliver">書き出し(3プラットフォーム共通) <span class="tc">3分</span></a>
+  <a class="l-auto" href="#auto">自動化の足がかり <span class="tc">将来</span></a>
+</div>
+
+<!-- ═══════════ 1. プロジェクト設定 ═══════════ -->
+<section id="setup">
+  <div class="sec-head"><span class="chip">SETUP</span><h2>縦動画プロジェクトを作る</h2></div>
+  <p class="lede">最初の1回だけ丁寧に。2本目以降はテンプレート複製で30秒で終わります。</p>
+
+  <h3>新規プロジェクト → 解像度を縦に変更</h3>
+  <ol>
+    <li>起動後のプロジェクトマネージャーで <span class="menu">New Project</span> → 名前を付けて作成</li>
+    <li>右下の<b>歯車アイコン</b>(Project Settings)を開く</li>
+    <li><span class="menu">Master Settings</span> → Timeline resolution を <b>Custom</b> にして <b>1080 × 1920</b> と入力</li>
+    <li>Timeline frame rate は <b>30</b>(または素材に合わせて 60)。<b>ここだけは後から変更できない</b>ので素材撮影時のfpsを先に確認</li>
+    <li>Save で確定</li>
+  </ol>
+
+  <div class="pit">
+    <span class="t">つまずきポイント</span>
+    フレームレートは「クリップを1本でもタイムラインに置いた後」はグレーアウトして変更不可になります。iPhone撮影素材は30fpsか60fpsが多いので、読み込む前に素材を1つ右クリック→情報で確認しておくのが確実です。
+  </div>
+
+  <h3>横素材しかない場合 — Smart Reframe <span class="studio">STUDIO限定</span></h3>
+  <p>横16:9の素材を縦9:16タイムラインに置くと左右が切れますが、Studioなら被写体を自動追尾してフレーミングしてくれます。</p>
+  <ol>
+    <li>タイムライン上のクリップを選択</li>
+    <li>右上 <span class="menu">Inspector</span> → Video → <span class="menu">Smart Reframe</span> を開く</li>
+    <li>Object of Interest を <b>Auto</b> にして <span class="menu">Reframe</span> を押す</li>
+  </ol>
+</section>
+
+<!-- ═══════════ 2. メディア ═══════════ -->
+<section id="media">
+  <div class="sec-head"><span class="chip">MEDIA</span><h2>素材を読み込む</h2></div>
+  <p class="lede">凝った管理は不要。ドラッグ&ドロップだけ覚えれば十分です。</p>
+  <ol>
+    <li>画面下部のページタブから <span class="menu">Edit</span>(または <span class="menu">Cut</span>)ページを開く</li>
+    <li>FinderからMedia Pool(左上の領域)へ動画・音声・画像を<b>ドラッグ&ドロップ</b></li>
+    <li>「フレームレートが違う」と警告が出たら <b>Don't Change</b> を選ぶ(プロジェクト設定を維持)</li>
+  </ol>
+
+  <div class="pit">
+    <span class="t">つまずきポイント</span>
+    Resolveは素材を「リンク」で参照します。読み込み後に元ファイルを移動・削除するとクリップが赤くなり再リンクが必要に。<b>素材は1つのフォルダにまとめてから読み込む</b>運用にすると事故ゼロです。例: <kbd>~/Movies/shorts/2026-06-11_案件名/</kbd>
+  </div>
+</section>
+
+<!-- ═══════════ 3. カット編集 ═══════════ -->
+<section id="cut">
+  <div class="sec-head"><span class="chip">EDIT</span><h2>カット編集 — 作業の8割はここ</h2></div>
+  <p class="lede">ショート動画の編集は実質「不要部分を削る」だけ。以下の5操作で完結します。</p>
+
+  <h3>覚えるショートカットは5つだけ</h3>
+  <table>
+    <tr><th>操作</th><th>キー</th><th>用途</th></tr>
+    <tr><td>再生 / 停止</td><td><kbd>Space</kbd></td><td>確認</td></tr>
+    <tr><td>早送り・巻き戻し</td><td><kbd>J</kbd> <kbd>K</kbd> <kbd>L</kbd></td><td>L連打で倍速。チェックが速い</td></tr>
+    <tr><td>カット(分割)</td><td><kbd>⌘B</kbd></td><td>再生ヘッド位置でクリップを切る</td></tr>
+    <tr><td>削除して詰める</td><td>選択して右クリック →<br>Ripple Delete</td><td>隙間を残さず削除</td></tr>
+    <tr><td>取り消し</td><td><kbd>⌘Z</kbd></td><td>何回でも戻れる</td></tr>
+  </table>
+
+  <h3>基本の流れ</h3>
+  <ol>
+    <li>Media Poolのクリップをタイムラインへドラッグ</li>
+    <li><kbd>L</kbd> 連打の倍速再生で全体を流し見</li>
+    <li>不要部分の頭で <kbd>⌘B</kbd>、終わりで <kbd>⌘B</kbd></li>
+    <li>挟まれた部分を選択 → 右クリック → <b>Ripple Delete</b></li>
+    <li>クリップの端をドラッグすれば微調整(トリム)も可能</li>
+  </ol>
+
+  <details>
+    <summary>CutページとEditページ、どっちを使う?</summary>
+    <div class="body">
+      <p><b>結論: Editページだけで始めてOK。</b></p>
+      <p>Cutページは高速編集特化(2画面タイムライン等)で慣れると速いですが、操作体系が独特で解説情報もEditページ前提が大半。学習コストを考えると、まずEditページに一本化し、月10本以上量産する段階になったらCutページを試すのが効率的です。</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>テンポを出すコツ(ショート動画特有)</summary>
+    <div class="body">
+      <ul>
+        <li><b>冒頭2秒</b>に結論かフックを置く。前置きカットは全削除</li>
+        <li>文と文の間の「えー」「間」を <kbd>⌘B</kbd>×2 + Ripple Delete で刻む(ジャンプカット)。違和感はテロップが吸収してくれる</li>
+        <li>尺はYouTube Shorts/TikTok/Reelsとも<b>60秒以内</b>に収めれば3つ同時投稿できる</li>
+      </ul>
+    </div>
+  </details>
+</section>
+
+<!-- ═══════════ 4. テロップ ═══════════ -->
+<section id="caption">
+  <div class="sec-head"><span class="chip">TEXT</span><h2>テロップ・自動字幕</h2></div>
+  <p class="lede">ショート動画は音なし視聴が多く、字幕の有無で視聴維持率が変わります。Studioなら自動生成できます。</p>
+
+  <h3>音声から字幕を自動生成 <span class="studio">STUDIO限定</span></h3>
+  <ol>
+    <li>メニューバー <span class="menu">Timeline</span> → <span class="menu">Create Subtitles from Audio</span></li>
+    <li>言語で <b>Japanese</b> を選択 → Create</li>
+    <li>タイムライン最上部に字幕トラックが生成される</li>
+    <li>字幕クリップをダブルクリックすれば誤認識をその場で修正可能</li>
+    <li>Inspector → 字幕トラックの <span class="menu">Track Style</span> でフォント・サイズ・縁取り・位置を一括変更</li>
+  </ol>
+
+  <div class="pit">
+    <span class="t">つまずきポイント</span>
+    字幕トラックはそのままだと書き出しに焼き込まれない設定の場合があります。Deliverページで <b>Export Subtitle → Burn into video</b> にチェックが入っているか必ず確認(後述の書き出しプリセットに含めれば以後は自動)。
+  </div>
+
+  <h3>タイトル・強調テロップを手動で入れる</h3>
+  <ol>
+    <li>Editページ左上 <span class="menu">Effects</span> → <span class="menu">Titles</span> → <b>Text+</b> をビデオトラック2(クリップの上段)へドラッグ</li>
+    <li>Inspectorでテキスト入力。サイズ・色・縁取り(Shading)を設定</li>
+    <li>セーフエリア: 上部はアプリのUI、下部はキャプション欄と被るため、<b>テロップは中央〜やや下</b>に配置</li>
+  </ol>
+
+  <details>
+    <summary>毎回同じデザインにする(テロップの使い回し)</summary>
+    <div class="body">
+      <p>調整済みのText+クリップを右クリック → <span class="menu">Create New Fusion Generator</span>…でも保存できますが、より簡単なのは<b>スタイル済みText+をタイムラインに置いたままプロジェクトごとテンプレ化</b>する方法(自動化の章を参照)。コピー&ペーストで文字だけ打ち替えれば、デザイン作業が毎回ゼロになります。</p>
+    </div>
+  </details>
+</section>
+
+<!-- ═══════════ 5. 音声 ═══════════ -->
+<section id="audio">
+  <div class="sec-head"><span class="chip">AUDIO</span><h2>音声とBGM</h2></div>
+  <p class="lede">Fairlightページは開かなくてOK。EditページのInspectorだけで足ります。</p>
+
+  <h3>声を聞きやすくする最短手順</h3>
+  <ol>
+    <li>声のクリップを選択 → Inspector → <span class="menu">Audio</span></li>
+    <li><b>Voice Isolation</b> をON <span class="studio">STUDIO限定</span> — 環境音・ノイズをAIが除去。これだけで品質が一段上がる</li>
+    <li>音量はクリップ中央の白い横線を上下ドラッグ。声は再生時にメーターが<b>-12〜-6dB</b>あたりで振れる程度が目安</li>
+  </ol>
+
+  <h3>BGMを敷く</h3>
+  <ol>
+    <li>BGMファイルをオーディオトラック2へドラッグ</li>
+    <li>音量線を下げて<b>-25〜-20dB</b>程度に(声の邪魔をしない)</li>
+    <li>終端のフェードアウト: クリップ右上角の白い▲マーカーを左へドラッグ</li>
+  </ol>
+
+  <div class="pit">
+    <span class="t">つまずきポイント</span>
+    BGMの著作権はプラットフォーム側で検出されます。TikTok/Reels内の公式音源はアプリ内でしか使えないため、Resolveで編集する場合はYouTube Audio Libraryや商用可のフリー音源を使うこと。
+  </div>
+</section>
+
+<!-- ═══════════ 6. 書き出し ═══════════ -->
+<section id="deliver">
+  <div class="sec-head"><span class="chip">DELIVER</span><h2>書き出し — 3プラットフォーム共通設定</h2></div>
+  <p class="lede">YouTube Shorts / TikTok / Reels は同一ファイルで投稿可能。プリセットを1回作れば以後ワンタップです。</p>
+
+  <h3>設定値(1回だけ手入力)</h3>
+  <ol>
+    <li>画面下部タブから <span class="menu">Deliver</span> ページへ</li>
+    <li>左上 Render Settings で <b>Custom Export</b> を選択</li>
+    <li>以下を設定:</li>
+  </ol>
+  <table>
+    <tr><th>項目</th><th>値</th></tr>
+    <tr><td>Format</td><td>MP4</td></tr>
+    <tr><td>Codec</td><td>H.264(互換性最優先)</td></tr>
+    <tr><td>Resolution</td><td>1080 × 1920</td></tr>
+    <tr><td>Frame rate</td><td>タイムラインと同じ(30 or 60)</td></tr>
+    <tr><td>Quality</td><td>Restrict to <b>20,000〜25,000 Kb/s</b></td></tr>
+    <tr><td>Audio Codec</td><td>AAC / 320 Kb/s</td></tr>
+    <tr><td>Subtitle(自動字幕使用時)</td><td>Export Subtitle → <b>Burn into video</b></td></tr>
+  </table>
+  <ol start="4">
+    <li>保存先を指定 → <span class="menu">Add to Render Queue</span></li>
+    <li>右側のキューで <span class="menu">Render All</span> → 完了</li>
+  </ol>
+
+  <h3>プリセット化(2回目以降を10秒に)</h3>
+  <p>上記設定の状態で Render Settings 右上の <b>「…」メニュー → Save As New Preset</b>。「ショート縦1080p」等の名前で保存すれば、次回からプリセット選択 → Add to Queue → Render の3タップで終わります。</p>
+</section>
+
+<!-- ═══════════ 7. 自動化 ═══════════ -->
+<section id="auto">
+  <div class="sec-head"><span class="chip">AUTO</span><h2>自動化の足がかり</h2></div>
+  <p class="lede">「全自動編集」は現実的でないが、<b>毎回の繰り返し作業をゼロにする</b>仕込みは今日からできます。効果順に3段階。</p>
+
+  <h3>段階1: プロジェクトテンプレート(即効・効果大)</h3>
+  <p>縦設定 + スタイル済みテロップ + BGMトラック + 音量設定まで作り込んだプロジェクトを1つ用意し、プロジェクトマネージャーで右クリック → <b>Duplicate(複製)</b>から毎回スタート。セットアップ時間が毎回15分 → 0分に。</p>
+
+  <h3>段階2: プリセットの積み上げ</h3>
+  <ul>
+    <li><b>レンダープリセット</b>(前章) — 書き出し設定の再入力をゼロに</li>
+    <li><b>Power Bin</b>: Media Poolで右クリック → Show Power Bins。ここに入れた素材(ロゴ・定番BGM・効果音)は<b>全プロジェクト共通</b>で使い回せる</li>
+    <li><b>字幕Track Styleのプリセット保存</b> — テロップデザインの統一を自動化</li>
+  </ul>
+
+  <h3>段階3: スクリプティングAPI(Hermes連携の入口)</h3>
+  <p>ResolveはPython/Luaの<b>公式スクリプティングAPI</b>を持ち、外部からプロジェクト作成・素材読み込み・レンダー実行を叩けます。確認方法:</p>
+  <ol>
+    <li>メニュー <span class="menu">Workspace</span> → <span class="menu">Console</span> でPy3を選ぶとAPIを対話実行できる</li>
+    <li>APIドキュメントはMac内の <kbd>/Library/Application Support/Blackmagic Design/DaVinci Resolve/Developer/Scripting/</kbd> にREADMEとサンプルが同梱</li>
+  </ol>
+  <p>現実的な最初の自動化対象は「<b>素材フォルダを監視 → 新規プロジェクト生成 → 素材読み込み → タイムライン配置まで自動</b>」。編集判断は人間、準備と書き出しは機械、という分担が費用対効果の最適点です。Mac mini側のHermes Agentからスクリプトを起動する構成も組めます(外部スクリプティングはStudio版のみの機能なので、その点でもStudioを持っている強みが活きます)。</p>
+</section>
+
+<footer>
+  DaVinci Resolve Studio 対応版(19系UI基準)。メニュー名はバージョンにより多少異なる場合があります。<br>
+  <span class="studio">STUDIO限定</span> 表記の機能は無償版では使用できません。
+</footer>
+
+</div><!-- /wrap -->
+
+<nav class="pagebar" aria-label="セクション移動">
+  <a href="#setup" style="--d:var(--c-setup)"><span class="dot"></span>設定</a>
+  <a href="#media" style="--d:var(--c-media)"><span class="dot"></span>素材</a>
+  <a href="#cut" style="--d:var(--c-cut)"><span class="dot"></span>カット</a>
+  <a href="#caption" style="--d:var(--c-text)"><span class="dot"></span>字幕</a>
+  <a href="#audio" style="--d:var(--c-audio)"><span class="dot"></span>音声</a>
+  <a href="#deliver" style="--d:var(--c-deliver)"><span class="dot"></span>出力</a>
+  <a href="#auto" style="--d:var(--c-auto)"><span class="dot"></span>自動化</a>
+</nav>
+
+</body>
+</html>
