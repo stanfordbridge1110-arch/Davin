@@ -20,6 +20,10 @@
     --c-audio:#4fa8a0;      /* 音声=ティール */
     --c-deliver:#b07cd8;    /* 書き出し=パープル */
     --c-auto:#7cc46a;       /* 自動化=グリーン */
+    --c-motion:#e08fb0;     /* 動き=ピンク */
+    --c-fx:#5fb0e0;         /* 演出=スカイ */
+    --c-color:#e0b04f;      /* カラー=ゴールド */
+    --c-keys:#a0a0ac;       /* ショートカット=シルバー */
   }
   *{margin:0;padding:0;box-sizing:border-box;}
   html{scroll-behavior:smooth;}
@@ -248,14 +252,22 @@
   #cut{--clip:var(--c-cut);}
   #caption{--clip:var(--c-text);}
   #audio{--clip:var(--c-audio);}
+  #motion{--clip:var(--c-motion);}
+  #fx{--clip:var(--c-fx);}
+  #color{--clip:var(--c-color);}
   #deliver{--clip:var(--c-deliver);}
+  #keys{--clip:var(--c-keys);}
   #auto{--clip:var(--c-auto);}
   .toc a.l-setup{--clip:var(--c-setup);}
   .toc a.l-media{--clip:var(--c-media);}
   .toc a.l-cut{--clip:var(--c-cut);}
   .toc a.l-caption{--clip:var(--c-text);}
+  .toc a.l-motion{--clip:var(--c-motion);}
+  .toc a.l-fx{--clip:var(--c-fx);}
+  .toc a.l-color{--clip:var(--c-color);}
   .toc a.l-audio{--clip:var(--c-audio);}
   .toc a.l-deliver{--clip:var(--c-deliver);}
+  .toc a.l-keys{--clip:var(--c-keys);}
   .toc a.l-auto{--clip:var(--c-auto);}
 
   /* ───── 下部ナビ(Resolveのページタブ風) ───── */
@@ -266,17 +278,23 @@
     backdrop-filter:blur(8px);
     border-top:1px solid var(--line);
     display:flex;
-    justify-content:space-around;
-    padding:8px 4px calc(8px + env(safe-area-inset-bottom));
+    gap:2px;
+    justify-content:flex-start;
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+    padding:8px 8px calc(8px + env(safe-area-inset-bottom));
     z-index:50;
   }
+  nav.pagebar::-webkit-scrollbar{display:none;}
   nav.pagebar a{
     text-decoration:none;
     color:var(--muted);
     font-size:10px;
-    letter-spacing:.04em;
+    letter-spacing:.02em;
     text-align:center;
-    min-width:42px;
+    min-width:46px;
+    flex:0 0 auto;
     -webkit-tap-highlight-color:transparent;
   }
   nav.pagebar a .dot{
@@ -318,8 +336,12 @@
   <a class="l-media" href="#media">素材を読み込む <span class="tc">2分</span></a>
   <a class="l-cut" href="#cut">カット編集(本体作業) <span class="tc">中心</span></a>
   <a class="l-caption" href="#caption">テロップ・自動字幕 <span class="tc">Studio</span></a>
+  <a class="l-motion" href="#motion">動きをつける(キーフレーム) <span class="tc">+1段</span></a>
+  <a class="l-fx" href="#fx">トランジション・演出 <span class="tc">+1段</span></a>
+  <a class="l-color" href="#color">色を整える(Color) <span class="tc">+1段</span></a>
   <a class="l-audio" href="#audio">音声とBGM <span class="tc">5分</span></a>
   <a class="l-deliver" href="#deliver">書き出し(3プラットフォーム共通) <span class="tc">3分</span></a>
+  <a class="l-keys" href="#keys">ショートカット早見表 <span class="tc">保存版</span></a>
   <a class="l-auto" href="#auto">自動化の足がかり <span class="tc">将来</span></a>
 </div>
 
@@ -445,6 +467,112 @@
   </details>
 </section>
 
+<!-- ═══════════ 動き(キーフレーム) ═══════════ -->
+<section id="motion">
+  <div class="sec-head"><span class="chip">MOTION</span><h2>動きをつける(キーフレーム)</h2></div>
+  <p class="lede">静止画のズームイン、テロップのスライドイン、被写体追従。すべて「2点を打って間を補間させる」だけです。原理は1つ、応用は無限。</p>
+
+  <h3>キーフレームの考え方 — 20文字で言うと</h3>
+  <p><b>「ここではこう、ここではこう」と2点指定するだけ。</b>間の動きはResolveが自動計算します。新しい操作を覚えるのではなく、この1原則を3か所に適用するだけです。</p>
+
+  <h3>例1: 静止画をゆっくり拡大(Ken Burns効果)</h3>
+  <ol>
+    <li>クリップ選択 → Inspector → <span class="menu">Video</span> → Zoom の項目</li>
+    <li>再生ヘッドをクリップの<b>先頭</b>に置く → Zoom右端の<b>◇(ダイヤ)アイコン</b>をクリックして点を打つ(Zoom 1.0)</li>
+    <li>再生ヘッドをクリップの<b>末尾</b>へ → Zoom値を <b>1.15</b> に変更(自動で2点目が打たれる)</li>
+    <li>再生すると、ゆっくり1.15倍までズームする</li>
+  </ol>
+  <div class="pit">
+    <span class="t">つまずきポイント</span>
+    ◇を先に打たずに値だけ変えると、クリップ全体が一律で拡大されるだけで「動き」になりません。<b>必ず先頭で1点打ってから末尾で値を変える</b>──この順番が肝です。
+  </div>
+
+  <h3>例2: テロップを左からスライドイン</h3>
+  <ol>
+    <li>Text+クリップ選択 → Inspector → Video → <span class="menu">Position</span></li>
+    <li>先頭で Position X を画面外(マイナス値)にして◇を打つ</li>
+    <li>0.5秒後の位置へ再生ヘッドを移動 → X を定位置(0)に戻す</li>
+    <li>2点間でスライドインが完成。Reels/Shortsの定番演出</li>
+  </ol>
+
+  <details>
+    <summary>動きを滑らかにする(イーズイン/アウト)</summary>
+    <div class="body">
+      <p>直線的な動きは機械的に見えます。打ったキーフレームを<b>右クリック → Ease In / Ease Out</b>を選ぶと、加速・減速がついてプロっぽい質感に。静止画ズームもテロップも、これを足すだけで一段上がります。</p>
+    </div>
+  </details>
+</section>
+
+<!-- ═══════════ 演出 ═══════════ -->
+<section id="fx">
+  <div class="sec-head"><span class="chip">FX</span><h2>トランジション・演出</h2></div>
+  <p class="lede">ショート動画では「足しすぎない」が正解。使うのは実質2種類で十分です。</p>
+
+  <h3>トランジションの入れ方</h3>
+  <ol>
+    <li>Editページ左上 <span class="menu">Effects</span> → <span class="menu">Video Transitions</span></li>
+    <li>使うのはほぼ2つ: <b>Cross Dissolve</b>(柔らかい切替)と<b>Cut</b>(瞬間切替=何も入れない)</li>
+    <li>トランジションをクリップとクリップの<b>つなぎ目へドラッグ</b></li>
+    <li>長さはトランジション両端をドラッグ。<b>0.3〜0.5秒</b>が目安(長いとモタつく)</li>
+  </ol>
+  <div class="pit">
+    <span class="t">つまずきポイント</span>
+    凝ったトランジション(回転・グリッチ等)を多用すると「素人が機能を試した動画」に見えます。プロのショートほどカット主体で、ディゾルブは場面転換の数か所だけ。<b>9割はCut、転換点だけDissolve</b>が鉄則です。
+  </div>
+
+  <h3>効果的な演出3つ(これだけで足りる)</h3>
+  <table>
+    <tr><th>演出</th><th>やり方</th><th>用途</th></tr>
+    <tr><td>ズームパンチ</td><td>キーフレームでZoom 1.0→1.1を2〜3フレームで</td><td>強調したい一言で「ズッ」と寄る</td></tr>
+    <tr><td>ホワイトフラッシュ</td><td>白いText+(または単色)を数フレーム挟む</td><td>場面の切替を勢いよく</td></tr>
+    <tr><td>速度変化</td><td>クリップ右クリック → Change Clip Speed</td><td>退屈な部分を倍速、見せ場をスロー</td></tr>
+  </table>
+
+  <details>
+    <summary>一部だけスロー/早送りにする(速度ランプ)</summary>
+    <div class="body">
+      <p>クリップ右クリック → <span class="menu">Retime Controls</span>。クリップ上に速度バーが出るので、区間を指定して各区間の速度を変えられます。「助走は2倍速 → 決めの瞬間だけ0.5倍速」のような緩急が1クリップ内で作れます。</p>
+    </div>
+  </details>
+</section>
+
+<!-- ═══════════ カラー ═══════════ -->
+<section id="color">
+  <div class="sec-head"><span class="chip">COLOR</span><h2>色を整える(Color)</h2></div>
+  <p class="lede">Colorページは無限に奥が深いですが、ショート動画でやることは3つだけ。それ以上は沼です。</p>
+
+  <h3>Colorページの最小限の使い方</h3>
+  <ol>
+    <li>画面下部タブ → <span class="menu">Color</span> ページへ</li>
+    <li>上部のサムネイル(クリップ)を選択 → 中央下の<b>Primaries(カラーホイール)</b>を使う</li>
+    <li>やることは次の3つだけ ↓</li>
+  </ol>
+  <table>
+    <tr><th>調整</th><th>操作</th><th>効果</th></tr>
+    <tr><td>明るさ</td><td>Lift/Gamma/Gain の縦スライダー</td><td>暗い→Gammaを上げる</td></tr>
+    <tr><td>色被り補正</td><td>各ホイールの中心点を逆方向へ</td><td>青すぎ→オレンジ側へ少し</td></tr>
+    <tr><td>鮮やかさ</td><td>下段の Sat(彩度)を上げる</td><td>くすみ→1.1〜1.2倍に</td></tr>
+  </table>
+
+  <h3>LUTで一発で雰囲気を作る</h3>
+  <ol>
+    <li>Colorページ左上 <span class="menu">LUTs</span> をクリック(サムネイル一覧が出る)</li>
+    <li>気に入った見た目のLUTを<b>右クリック → Apply LUT on Current Clip</b></li>
+    <li>効きすぎたら、ノード(右上のNode)で <span class="menu">Key</span> → Output Gain を下げて<b>適用量を調整</b></li>
+  </ol>
+  <div class="pit">
+    <span class="t">つまずきポイント</span>
+    LUTは「最後の味付け」です。明るさ・色被りを<b>先にPrimariesで整えてから</b>LUTを乗せること。下地が崩れたままLUTを当てると不自然な色になります。順番=Primaries → LUT → 彩度微調整。
+  </div>
+
+  <details>
+    <summary>全クリップに同じ色を一括適用</summary>
+    <div class="body">
+      <p>1つのクリップを調整したら、そのサムネイルを<b>右クリック → Copy</b>。適用したい他のサムネイルを範囲選択して<b>右クリック → Paste</b>。ショート動画は同一シーンが多いので、これで色味が一瞬で統一できます。</p>
+    </div>
+  </details>
+</section>
+
 <!-- ═══════════ 5. 音声 ═══════════ -->
 <section id="audio">
   <div class="sec-head"><span class="chip">AUDIO</span><h2>音声とBGM</h2></div>
@@ -500,6 +628,46 @@
   <p>上記設定の状態で Render Settings 右上の <b>「…」メニュー → Save As New Preset</b>。「ショート縦1080p」等の名前で保存すれば、次回からプリセット選択 → Add to Queue → Render の3タップで終わります。</p>
 </section>
 
+<!-- ═══════════ ショートカット早見表 ═══════════ -->
+<section id="keys">
+  <div class="sec-head"><span class="chip">KEYS</span><h2>ショートカット早見表(保存版)</h2></div>
+  <p class="lede">編集速度はショートカットの習熟でほぼ決まります。まず上段の「最初に覚える」だけ体に入れれば十分。Mac基準。</p>
+
+  <h3>最初に覚える5つ(これだけで編集できる)</h3>
+  <table>
+    <tr><th>操作</th><th>キー</th></tr>
+    <tr><td>再生 / 停止</td><td><kbd>Space</kbd></td></tr>
+    <tr><td>巻戻し / 停止 / 早送り</td><td><kbd>J</kbd> <kbd>K</kbd> <kbd>L</kbd></td></tr>
+    <tr><td>カット(分割)</td><td><kbd>⌘B</kbd></td></tr>
+    <tr><td>取り消し / やり直し</td><td><kbd>⌘Z</kbd> / <kbd>⌘⇧Z</kbd></td></tr>
+    <tr><td>保存</td><td><kbd>⌘S</kbd></td></tr>
+  </table>
+
+  <h3>慣れたら効く編集系</h3>
+  <table>
+    <tr><th>操作</th><th>キー</th></tr>
+    <tr><td>Ripple Delete(詰めて削除)</td><td><kbd>⌘⌫</kbd></td></tr>
+    <tr><td>In点 / Out点を打つ</td><td><kbd>I</kbd> / <kbd>O</kbd></td></tr>
+    <tr><td>1フレーム進む / 戻る</td><td><kbd>→</kbd> / <kbd>←</kbd></td></tr>
+    <tr><td>クリップ先頭 / 末尾へ</td><td><kbd>↑</kbd> / <kbd>↓</kbd></td></tr>
+    <tr><td>選択クリップを削除(詰めない)</td><td><kbd>⌫</kbd></td></tr>
+    <tr><td>タイムライン全体表示</td><td><kbd>⇧Z</kbd></td></tr>
+    <tr><td>タイムライン拡大 / 縮小</td><td><kbd>⌘=</kbd> / <kbd>⌘−</kbd></td></tr>
+  </table>
+
+  <h3>ページ移動</h3>
+  <table>
+    <tr><th>ページ</th><th>キー</th></tr>
+    <tr><td>Edit / Color / Fairlight など</td><td><kbd>⇧4</kbd> / <kbd>⇧6</kbd> / <kbd>⇧7</kbd></td></tr>
+    <tr><td>Cut / Deliver</td><td><kbd>⇧3</kbd> / <kbd>⇧8</kbd></td></tr>
+  </table>
+
+  <div class="pit">
+    <span class="t">時短のコツ</span>
+    自分の手癖に合わせてキーは変更できます。メニュー <span class="menu">DaVinci Resolve → Keyboard Customization</span>。さらに、Premiere ProやFinal Cut Proの配列に丸ごと切り替えるプリセットもあるので、他ソフト経験者は乗り換えコストをゼロにできます。
+  </div>
+</section>
+
 <!-- ═══════════ 7. 自動化 ═══════════ -->
 <section id="auto">
   <div class="sec-head"><span class="chip">AUTO</span><h2>自動化の足がかり</h2></div>
@@ -536,8 +704,12 @@
   <a href="#media" style="--d:var(--c-media)"><span class="dot"></span>素材</a>
   <a href="#cut" style="--d:var(--c-cut)"><span class="dot"></span>カット</a>
   <a href="#caption" style="--d:var(--c-text)"><span class="dot"></span>字幕</a>
+  <a href="#motion" style="--d:var(--c-motion)"><span class="dot"></span>動き</a>
+  <a href="#fx" style="--d:var(--c-fx)"><span class="dot"></span>演出</a>
+  <a href="#color" style="--d:var(--c-color)"><span class="dot"></span>色</a>
   <a href="#audio" style="--d:var(--c-audio)"><span class="dot"></span>音声</a>
   <a href="#deliver" style="--d:var(--c-deliver)"><span class="dot"></span>出力</a>
+  <a href="#keys" style="--d:var(--c-keys)"><span class="dot"></span>キー</a>
   <a href="#auto" style="--d:var(--c-auto)"><span class="dot"></span>自動化</a>
 </nav>
 
